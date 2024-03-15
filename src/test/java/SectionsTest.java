@@ -1,13 +1,14 @@
 import io.qameta.allure.junit4.DisplayName;
 import junitparams.JUnitParamsRunner;
 import model.ConstructorPage;
+import model.LoginPage;
 import model.MainPage;
 import org.junit.*;
 import org.junit.runner.RunWith;
-
 import static browser.Browser.browserChoice;
 import static browser.Browser.closeNotChromeBrowser;
 import static com.codeborne.selenide.Selenide.*;
+import static generator.UserGenerator.*;
 
 @RunWith(JUnitParamsRunner.class)
 @DisplayName("Тестирование вкладок конструктора")
@@ -15,6 +16,8 @@ public class SectionsTest {
 
     MainPage mainPage;
     ConstructorPage constructorPage;
+    String newEmail;
+    String userId;
 
     @BeforeClass
     public static void beforeAll() {
@@ -25,11 +28,16 @@ public class SectionsTest {
     public void setUp() {
         mainPage = open(MainPage.MAIN_PAGE_URL, MainPage.class);
         constructorPage = page(ConstructorPage.class);
+        newEmail = getNewRandomEmail();
+        userId = LoginPage.createUser(newEmail, DEFAULT_PASSWORD, DEFAULT_NAME);
     }
 
     @After
     public void tearDown(){
         clearBrowserLocalStorage();
+        if (userId != null) {
+            LoginPage.deleteUser(userId);
+        }
     }
 
     @AfterClass

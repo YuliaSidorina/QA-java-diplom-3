@@ -1,14 +1,15 @@
 import com.codeborne.selenide.WebDriverRunner;
 import io.qameta.allure.junit4.DisplayName;
 import junitparams.JUnitParamsRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
 import model.LoginPage;
 import model.MainPage;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.codeborne.selenide.Selenide.*;
-import static browser.Browser.browserChoice;
-import static browser.Browser.closeNotChromeBrowser;
 
 @RunWith(JUnitParamsRunner.class)
 @DisplayName("Тесты переходов на страницы")
@@ -16,11 +17,6 @@ public class GoToPageTest {
 
     MainPage mainPage;
     LoginPage loginPage;
-
-    @BeforeClass
-    public static void beforeAll() {
-        browserChoice();
-    }
 
     @Before
     public void setUp() {
@@ -31,11 +27,6 @@ public class GoToPageTest {
     @After
     public void tearDown(){
         clearBrowserLocalStorage();
-    }
-
-    @AfterClass
-    public static void afterAll() {
-        closeNotChromeBrowser();
     }
 
     @Test

@@ -4,10 +4,10 @@ import model.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import static browser.Browser.*;
 import static com.codeborne.selenide.Selenide.*;
-import static browser.Browser.browserChoice;
-import static browser.Browser.closeNotChromeBrowser;
 import static generator.UserGenerator.*;
+import static io.restassured.RestAssured.given;
 
 @RunWith(JUnitParamsRunner.class)
 @DisplayName("Тесты авторизации")
@@ -18,6 +18,7 @@ public class AuthorizationTest {
     RegistrationPage registrationPage;
     PasswordRecoveryPage passwordRecoveryPage;
     PersonalAccountPage personalAccountPage;
+    String userId;
 
     @BeforeClass
     public static void beforeAll() {
@@ -34,7 +35,7 @@ public class AuthorizationTest {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         clearBrowserLocalStorage();
     }
 
@@ -43,9 +44,17 @@ public class AuthorizationTest {
         closeNotChromeBrowser();
     }
 
+    @After
+    public void cleanUp() {
+        if (userId != null) {
+            LoginPage.deleteUser(userId);
+        }
+    }
+
     @Test
     @DisplayName("Вход через кнопку 'Войти в аккаунт' на главной странице")
     public void signInBySignInButtonOnMainPage() {
+        userId = LoginPage.createUser(WORKING_EMAIL, DEFAULT_PASSWORD, "Test User");
         mainPage.clickSignInButton();
         loginPage.login(WORKING_EMAIL, DEFAULT_PASSWORD);
         Assert.assertTrue(mainPage.checkIsCheckOutButtonEnabled());
@@ -54,6 +63,7 @@ public class AuthorizationTest {
     @Test
     @DisplayName("Вход через кнопку 'Личный кабинет'")
     public void signInByPersonalAccountLink() {
+        userId = LoginPage.createUser(WORKING_EMAIL, DEFAULT_PASSWORD, "Test User");
         mainPage.clickPersonalAccountLink();
         loginPage.login(WORKING_EMAIL, DEFAULT_PASSWORD);
         Assert.assertTrue(mainPage.checkIsCheckOutButtonEnabled());
@@ -62,6 +72,7 @@ public class AuthorizationTest {
     @Test
     @DisplayName("Вход через кнопку в форме регистрации")
     public void signInBySignInButtonOnRegistrationPage() {
+        userId = LoginPage.createUser(WORKING_EMAIL, DEFAULT_PASSWORD, "Test User");
         mainPage.clickSignInButton();
         loginPage.clickRegisterLink();
         registrationPage.clickSignInLink();
@@ -72,6 +83,7 @@ public class AuthorizationTest {
     @Test
     @DisplayName("Вход через кнопку в форме восстановления пароля")
     public void signInBySignInButtonOnPasswordRecoveryPage() {
+        userId = LoginPage.createUser(WORKING_EMAIL, DEFAULT_PASSWORD, "Test User");
         mainPage.clickSignInButton();
         loginPage.clickPasswordRecoveryLink();
         passwordRecoveryPage.clickSignInLink();
@@ -82,6 +94,7 @@ public class AuthorizationTest {
     @Test
     @DisplayName("Выход из аккаунта")
     public void signOut() {
+        userId = LoginPage.createUser(WORKING_EMAIL, DEFAULT_PASSWORD, "Test User");
         mainPage.clickSignInButton();
         loginPage.login(WORKING_EMAIL, DEFAULT_PASSWORD);
         mainPage.clickPersonalAccountLink();

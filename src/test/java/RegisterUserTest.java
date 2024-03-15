@@ -1,3 +1,4 @@
+import com.codeborne.selenide.WebDriverRunner;
 import io.qameta.allure.junit4.DisplayName;
 import junitparams.JUnitParamsRunner;
 import org.junit.*;
@@ -19,6 +20,7 @@ public class RegisterUserTest {
     LoginPage loginPage;
     RegistrationPage registrationPage;
     String newEmail;
+    String userId;
 
     @BeforeClass
     public static void beforeAll() {
@@ -38,8 +40,11 @@ public class RegisterUserTest {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         clearBrowserLocalStorage();
+        if (userId != null) {
+            LoginPage.deleteUser(userId);
+        }
     }
 
     @AfterClass
@@ -50,6 +55,7 @@ public class RegisterUserTest {
     @Test
     @DisplayName("Регистрация с валидными данными")
     public void registerUserSuccessfully() {
+        userId = LoginPage.createUser(newEmail, DEFAULT_PASSWORD, DEFAULT_NAME);
         registrationPage.register(DEFAULT_NAME, newEmail, DEFAULT_PASSWORD);
         loginPage.login(newEmail, DEFAULT_PASSWORD);
         Assert.assertTrue(mainPage.checkIsCheckOutButtonEnabled());
@@ -58,6 +64,7 @@ public class RegisterUserTest {
     @Test
     @DisplayName("Регистрация со слишком коротким паролем")
     public void registerUserWithShortPassword() {
+        userId = LoginPage.createUser(newEmail, DEFAULT_PASSWORD, DEFAULT_NAME);
         registrationPage.register(DEFAULT_NAME, newEmail, SHORT_PASSWORD);
         Assert.assertTrue(registrationPage.checkIsIncorrectPasswordTextVisible());
     }

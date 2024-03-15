@@ -3,10 +3,14 @@ package model;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import model.Header;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
 import java.util.Objects;
+
+import io.restassured.response.Response;
+import io.restassured.RestAssured;
 
 public class LoginPage extends Header {
 
@@ -55,5 +59,23 @@ public class LoginPage extends Header {
     @Step("Переход на страницу восстановления пароля")
     public void clickPasswordRecoveryLink() {
         passwordRecoveryLink.click();
+    }
+
+    @Step("Создание пользователя через API")
+    public static String createUser(String email, String password, String name) {
+        Response response = RestAssured.given()
+                .contentType("application/json")
+                .body("{\"email\":\"" + email + "\",\"password\":\"" + password + "\",\"name\":\"" + name + "\"}")
+                .post("https://stellarburgers.nomoreparties.site/api/auth/register");
+
+        return response.path("user._id");
+    }
+
+    @Step("Удаление пользователя через API")
+    public static void deleteUser(String userId) {
+        RestAssured.given()
+                .delete("https://stellarburgers.nomoreparties.site/api/auth/user")
+                .then()
+                .statusCode(200);
     }
 }
