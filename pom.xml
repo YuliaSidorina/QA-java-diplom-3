@@ -10,144 +10,66 @@
 
     <!-- Определение свойств проекта -->
     <properties>
-        <!-- Версия исходников и целевая версия компиляции -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <!-- Кодировка исходных файлов -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Версия AspectJ -->
         <aspectj.version>1.9.7</aspectj.version>
-        <!-- Версия Allure -->
-        <allure.version>2.15.0</allure.version>
-        <!-- Версия Jackson -->
-        <jackson.version>2.14.2</jackson.version>
+        <allure.version>2.21.0</allure.version>
+        <selenium.version>4.15.0</selenium.version>
+        <jackson.version>2.15.3</jackson.version>
     </properties>
 
-    <!-- Зависимости проекта -->
     <dependencies>
-
-        <!-- Зависимость для работы с кодированием и декодированием -->
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit4</artifactId>
+            <version>${allure.version}</version>
         </dependency>
-
-        <!-- Зависимость для JUnit -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Зависимость для Mockito -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.12.4</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Зависимость для Allure JUnit4 -->
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-junit4</artifactId>
-            <version>${allure.version}</version>
-        </dependency>
-
-        <!-- Зависимость для REST-assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>4.4.0</version>
-            <scope>test</scope>
+            <version>5.3.2</version>
         </dependency>
-
-        <!-- Зависимость для генерации фейковых данных -->
         <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
-
-        <!-- Зависимость для работы с JSON -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
-        <!-- Зависимость для JUnitParams -->
-        <dependency>
-            <groupId>pl.pragmatists</groupId>
-            <artifactId>JUnitParams</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-
-        <!-- Зависимость для Selenium WebDriver API -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-api</artifactId>
-            <version>4.6.0</version>
-        </dependency>
-
-        <!-- Зависимость для ChromeDriver -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-chrome-driver</artifactId>
-            <version>4.6.0</version>
-        </dependency>
-
-        <!-- Зависимость для Selenide -->
-        <dependency>
-            <groupId>com.codeborne</groupId>
-            <artifactId>selenide</artifactId>
-            <version>6.10.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-devtools-v117</artifactId>
-            <version>4.14.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>5.3.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
-    <!-- Конфигурация сборки проекта -->
     <build>
-        <!-- Определение исходной директории -->
-        <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
-            <!-- Плагин для компиляции исходных файлов -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-
-            <!-- Плагин для запуска тестов -->
-            <plugin>
+                <!-- настройка плагина maven-surefire-plugin -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
-                    <!-- Конфигурация для Allure -->
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <properties>
                         <property>
                             <name>listener</name>
@@ -156,12 +78,12 @@
                     </properties>
                     <systemProperties>
                         <property>
+                            <!-- папка, в которую будут генерироваться отчёты Allure -->
                             <name>allure.results.directory</name>
-                            <value>target/allure-results</value>
+                            <value>${project.build.directory}/allure-results</value>
                         </property>
                     </systemProperties>
                 </configuration>
-                <!-- Добавление зависимости для AspectJ -->
                 <dependencies>
                     <dependency>
                         <groupId>org.aspectj</groupId>
@@ -170,17 +92,16 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
-            <!-- Плагин для генерации отчетов Allure -->
+            <!-- подключение плагина allure-maven для вызова функций Allure с помощью Maven -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.12.0</version>
+                <version>2.10.0</version>
                 <configuration>
-                    <reportVersion>2.25.0</reportVersion>
-                    <resultsDirectory>target/allure-results</resultsDirectory>
+                    <reportVersion>2.15.0</reportVersion>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>
